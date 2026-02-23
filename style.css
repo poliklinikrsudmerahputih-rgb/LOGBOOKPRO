@@ -1,0 +1,329 @@
+/* FILE: style.css 
+    PROFESSIONAL LOGBOOK OS - DANIEL EDITION
+    STATUS: FULLY INTEGRATED & REKAP-READY
+*/
+
+/* --- 1. DYNAMIC SYSTEM THEMES --- */
+:root[data-theme="cyber"] {
+    --bg-main: #020617;
+    --bg-side: #0f172a;
+    --card-bg: #1e293b;
+    --accent: #38bdf8;
+    --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+    --text-title: #f8fafc;
+    --text-body: #94a3b8;
+    --border: rgba(255, 255, 255, 0.08);
+    --input-bg: #0f172a;
+    --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    --table-text: #f8fafc;
+    --modal-overlay: rgba(2, 6, 23, 0.85);
+}
+
+:root[data-theme="midnight"] {
+    --bg-main: #000000;
+    --bg-side: #09090b;
+    --card-bg: #18181b;
+    --accent: #10b981;
+    --accent-gradient: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+    --text-title: #ffffff;
+    --text-body: #a1a1aa;
+    --border: #27272a;
+    --input-bg: #09090b;
+    --shadow: 0 0 0 1px #27272a;
+    --table-text: #ffffff;
+    --modal-overlay: rgba(0, 0, 0, 0.9);
+}
+
+:root[data-theme="light"] {
+    --bg-main: #f8fafc;
+    --bg-side: #ffffff;
+    --card-bg: #ffffff;
+    --accent: #0284c7;
+    --accent-gradient: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
+    --text-title: #0f172a;
+    --text-body: #475569;
+    --border: #e2e8f0;
+    --input-bg: #f1f5f9;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --table-text: #1e293b;
+    --modal-overlay: rgba(15, 23, 42, 0.4);
+}
+
+/* --- 2. RESET & BASE --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: background 0.3s ease, border 0.3s ease, color 0.3s ease;
+}
+
+body {
+    background: var(--bg-main);
+    color: var(--text-title);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* --- 3. AUTHENTICATION --- */
+.auth-wrapper {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: var(--bg-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card-bg);
+    padding: 50px 40px;
+    border-radius: 32px;
+    border: 1px solid var(--border);
+    text-align: center;
+    box-shadow: var(--shadow);
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-logo {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 24px;
+    background: var(--accent-gradient);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white !important;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    color: var(--text-title) !important;
+    outline: none;
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 16px;
+    margin-top: 10px;
+    background: var(--accent-gradient);
+    color: white !important;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* --- 4. SIDEBAR (STABILIZED) --- */
+#sidebar {
+    width: 290px;
+    min-width: 290px;
+    /* Kunci lebar agar tidak menciut saat tabel lebar muncul */
+    background: var(--bg-side);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 30px 20px;
+    z-index: 100;
+}
+
+.nav-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--text-body);
+    margin: 20px 0 10px 15px;
+    letter-spacing: 2px;
+    opacity: 0.6;
+}
+
+#sidebar li {
+    padding: 14px 18px;
+    margin-bottom: 5px;
+    border-radius: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-body);
+}
+
+#sidebar li.active {
+    background: var(--accent-gradient);
+    color: white !important;
+    box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.25);
+}
+
+/* --- 5. MAIN CONTENT & TABLES --- */
+#main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg-main);
+}
+
+.header-bar {
+    height: 80px;
+    padding: 0 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-side);
+}
+
+.content-area {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.card {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 28px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    margin-bottom: 25px;
+}
+
+/* Tampilan Tabel Profesional */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: var(--bg-side);
+    padding: 15px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-body);
+    border-bottom: 2px solid var(--border);
+}
+
+td {
+    padding: 15px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--table-text) !important;
+}
+
+/* Kolom Tanggal Khusus di Rekap */
+.table-rekap td {
+    text-align: center;
+    min-width: 35px;
+    border-right: 1px solid var(--border);
+}
+
+.table-rekap th {
+    text-align: center;
+}
+
+/* --- 6. FIX TEKS & THEME SWITCHER --- */
+#page-content,
+.content-area,
+.card,
+td,
+p,
+h1,
+h2,
+h3,
+h4 {
+    color: var(--table-text) !important;
+}
+
+.theme-pill {
+    display: flex;
+    background: var(--input-bg);
+    padding: 5px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    gap: 4px;
+}
+
+.theme-opt {
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--text-body);
+    text-align: center;
+    flex: 1;
+}
+
+.theme-opt.active {
+    background: var(--card-bg);
+    color: var(--accent) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Tombol Aksi */
+.text-danger {
+    color: #ef4444 !important;
+}
+
+.text-primary {
+    color: var(--accent) !important;
+}
+
+/* --- 7. ANIMATIONS --- */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Scrollbar Style */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
