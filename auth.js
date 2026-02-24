@@ -1,9 +1,79 @@
 /**
  * AUTH.JS - Authentication & Session Manager
- * Optimized for Logbook Pro - Daniel Edition (Mobile Sync V3.7)
+ * Optimized for Logbook Pro - Daniel Edition (Mobile Sync V3.8)
+ * Update: Modern Logo UI Injector
  */
 
-// 1. TAMPILAN FORM SWITCHER
+// 1. DYNAMIC LOGO INJECTOR (Ganti logo D dengan UI Modern)
+function injectModernLogo() {
+    const authContainers = ['login-container', 'signup-container', 'forgot-container'];
+    
+    // HTML Logo baru yang keren (CSS Gradient + Icon)
+    const modernLogoHTML = `
+        <div class="modern-logo-wrapper">
+            <div class="logo-icon-circle">
+                <i class="fa-solid fa-book-medical"></i>
+            </div>
+            <div class="logo-text-brand">
+                <span class="brand-log">LOG</span><span class="brand-book">BOOK</span>
+                <div class="brand-tagline">PROFESSIONAL SYSTEM</div>
+            </div>
+        </div>
+        <style>
+            .modern-logo-wrapper {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-bottom: 30px;
+                animation: fadeInDown 0.8s ease;
+            }
+            .logo-icon-circle {
+                width: 80px;
+                height: 80px;
+                background: linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%);
+                border-radius: 22px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 40px;
+                color: white;
+                box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+                transform: rotate(-5deg);
+                margin-bottom: 15px;
+                border: 3px solid rgba(255,255,255,0.1);
+            }
+            .logo-text-brand {
+                text-align: center;
+                letter-spacing: 1px;
+            }
+            .brand-log { font-weight: 800; font-size: 24px; color: var(--accent); }
+            .brand-book { font-weight: 300; font-size: 24px; color: #fff; opacity: 0.9; }
+            .brand-tagline { 
+                font-size: 10px; 
+                font-weight: 700; 
+                opacity: 0.5; 
+                color: #fff; 
+                text-transform: uppercase;
+                margin-top: -5px;
+            }
+            @keyframes fadeInDown {
+                from { opacity: 0; transform: translateY(-20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            /* Sembunyikan logo lama berinisial D */
+            .auth-header h1, .old-logo { display: none !important; }
+        </style>
+    `;
+
+    authContainers.forEach(id => {
+        const container = document.getElementById(id);
+        if (container && !container.querySelector('.modern-logo-wrapper')) {
+            container.insertAdjacentHTML('afterbegin', modernLogoHTML);
+        }
+    });
+}
+
+// 2. TAMPILAN FORM SWITCHER
 function toggleAuth(mode) {
     const containers = ['login-container', 'signup-container', 'forgot-container'];
     containers.forEach(id => {
@@ -15,10 +85,11 @@ function toggleAuth(mode) {
     if (target) {
         target.classList.remove('hidden');
         target.style.animation = 'slideUp 0.4s ease-out';
+        injectModernLogo(); // Pastikan logo muncul saat pindah tab
     }
 }
 
-// 2. FUNGSI PENDAFTARAN (SIGN UP)
+// 3. FUNGSI PENDAFTARAN (SIGN UP)
 async function handleSignUp() {
     const email = document.getElementById('reg-email').value;
     const password = document.getElementById('reg-password').value;
@@ -38,9 +109,7 @@ async function handleSignUp() {
         const { data, error } = await supabaseClient.auth.signUp({
             email: email,
             password: password,
-            options: {
-                emailRedirectTo: window.location.origin
-            }
+            options: { emailRedirectTo: window.location.origin }
         });
 
         if (error) throw error;
@@ -59,7 +128,7 @@ async function handleSignUp() {
     }
 }
 
-// 3. FUNGSI LOGIN
+// 4. FUNGSI LOGIN
 async function handleLogin() {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
@@ -69,15 +138,12 @@ async function handleLogin() {
 
     try {
         setLoading(btn, true, 'Authenticating...');
-        
         const { data, error } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: password,
         });
 
         if (error) throw error;
-
-        // Login sukses, checkUser akan menangani perpindahan layar
         await checkUser();
 
     } catch (err) {
@@ -89,7 +155,7 @@ async function handleLogin() {
     }
 }
 
-// 4. FUNGSI LUPA PASSWORD (RECOVERY)
+// 5. FUNGSI LUPA PASSWORD
 async function handleForgotPassword() {
     const email = document.getElementById('forgot-email').value;
     const btn = document.querySelector('#forgot-container .auth-btn');
@@ -103,7 +169,6 @@ async function handleForgotPassword() {
         });
 
         if (error) throw error;
-
         Swal.fire('Email Dikirim', 'Instruksi reset password telah dikirim ke email Anda.', 'success');
         toggleAuth('login');
     } catch (err) {
@@ -113,7 +178,7 @@ async function handleForgotPassword() {
     }
 }
 
-// 5. FUNGSI LOGOUT
+// 6. FUNGSI LOGOUT
 async function handleLogout() {
     const confirm = await Swal.fire({
         title: 'Terminate Session?',
@@ -130,44 +195,34 @@ async function handleLogout() {
     }
 }
 
-// 6. SESSION MONITOR & UI SYNC (MODIFIED FOR MOBILE UI)
+// 7. SESSION MONITOR & UI SYNC
 async function checkUser() {
-    const { data: { user }, error } = await supabaseClient.auth.getUser();
+    const { data: { user } } = await supabaseClient.auth.getUser();
     
     const authSection = document.getElementById('auth-section');
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('main-content');
     const userDisplay = document.getElementById('user-display');
-    const burger = document.querySelector('.burger-menu'); // Tambahan elemen burger
-    const overlay = document.getElementById('sidebar-overlay'); // Tambahan elemen overlay
+    const burger = document.querySelector('.burger-menu');
+    const overlay = document.getElementById('sidebar-overlay');
 
     if (user) {
-        // User Login
         authSection.classList.add('hidden');
         sidebar.classList.remove('hidden');
         mainContent.classList.remove('hidden');
-        
-        // Munculkan burger menu di HP
         if (burger) burger.style.display = 'flex';
-        
         if (userDisplay) userDisplay.innerText = user.email.split('@')[0].toUpperCase();
-        
-        // Load default page jika konten kosong
         if (!document.getElementById('page-content').innerHTML) {
             showPage('profil');
         }
     } else {
-        // User Logout
         authSection.classList.remove('hidden');
         sidebar.classList.add('hidden');
         mainContent.classList.add('hidden');
-        
-        // Sembunyikan burger & tutup overlay saat logout
         if (burger) burger.style.display = 'none';
         if (overlay) overlay.style.display = 'none';
-        
-        // Pastikan sidebar kembali tertutup di mode desktop/tablet
         if (sidebar) sidebar.classList.remove('active');
+        injectModernLogo(); // Jalankan Logo saat di halaman Auth
     }
 }
 
@@ -180,14 +235,14 @@ function setLoading(button, isLoading, text) {
     }
 }
 
-// Global Alert menggunakan SweetAlert2
 const Swal = window.Swal || { 
     fire: (t, m, i) => { 
-        if(t === 'Berhasil!' || i === 'success') alert("✅ " + t + "\n" + m);
-        else alert("❌ " + t + "\n" + m);
+        alert((i === 'success' ? "✅ " : "❌ ") + t + "\n" + m);
         return { isConfirmed: true };
     } 
 };
 
-// INITIAL RUN
-document.addEventListener('DOMContentLoaded', checkUser);
+document.addEventListener('DOMContentLoaded', () => {
+    checkUser();
+    injectModernLogo();
+});

@@ -11,7 +11,55 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* Modern Header Profile Styles */
+        /* --- MODERN LOGO STYLES --- */
+        .modern-logo-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .logo-icon-circle {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            color: white;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+            transform: rotate(-5deg);
+            margin-bottom: 15px;
+            border: 3px solid rgba(255,255,255,0.1);
+        }
+
+        .logo-text-brand {
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .brand-log { font-weight: 800; font-size: 24px; color: var(--accent); }
+        .brand-book { font-weight: 300; font-size: 24px; color: #fff; opacity: 0.9; }
+        
+        .brand-tagline { 
+            font-size: 10px; 
+            font-weight: 700; 
+            opacity: 0.5; 
+            color: #fff; 
+            text-transform: uppercase;
+            margin-top: -5px;
+            letter-spacing: 2px;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- PROFILE & UI STYLES --- */
         .profile-trigger {
             display: flex;
             align-items: center;
@@ -57,7 +105,6 @@
             font-family: 'JetBrains Mono';
         }
 
-        /* Dropdown Logout */
         .account-dropdown {
             position: absolute;
             top: calc(100% + 10px);
@@ -88,12 +135,6 @@
 
         .dropdown-item:hover { background: rgba(248, 113, 113, 0.1); }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Branding Sidebar */
         .brand-simple {
             padding: 30px 25px;
             font-size: 22px;
@@ -115,7 +156,6 @@
             text-align: center;
         }
 
-        /* Burger Menu Styling */
         .burger-menu {
             display: none;
             font-size: 20px;
@@ -134,7 +174,6 @@
             z-index: 998;
         }
 
-        /* Responsive Fixes */
         @media (max-width: 768px) {
             .user-meta { display: none; }
             .brand-simple { padding: 20px 15px; font-size: 18px; }
@@ -149,9 +188,20 @@
 
     <div id="auth-section" class="auth-wrapper">
         <div id="login-container" class="auth-card">
-            <div class="auth-logo">D</div>
-            <h2>Logbook OS</h2>
-            <p style="font-size: 14px; color: var(--text-body); margin-bottom: 30px;">Access your professional workspace</p>
+            <div class="modern-logo-wrapper">
+                <div class="logo-icon-circle">
+                    <i class="fa-solid fa-book-medical"></i>
+                </div>
+                <div class="logo-text-brand">
+                    <span class="brand-log">LOG</span><span class="brand-book">BOOK</span>
+                    <div class="brand-tagline">PROFESSIONAL SYSTEM</div>
+                </div>
+            </div>
+            
+            <p style="font-size: 13px; color: var(--text-body); margin-bottom: 25px; text-align: center; opacity: 0.8;">
+                Authorized Access Only
+            </p>
+            
             <input type="email" id="login-email" class="auth-input" placeholder="Email Address">
             <input type="password" id="login-password" class="auth-input" placeholder="Password">
             <button onclick="handleLogin()" class="auth-btn">Initialize Session</button>
@@ -165,9 +215,14 @@
         </div>
 
         <div id="signup-container" class="auth-card hidden">
-            <div class="auth-logo" style="background: var(--text-body)">+</div>
-            <h2>Create Identity</h2>
-            <p style="font-size: 14px; color: var(--text-body); margin-bottom: 30px;">Register for Daniel Edition Logbook</p>
+            <div class="modern-logo-wrapper">
+                <div class="logo-icon-circle" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <div class="logo-text-brand">
+                    <span class="brand-log" style="color: #10b981;">NEW</span><span class="brand-book">IDENTITY</span>
+                </div>
+            </div>
             <input type="email" id="reg-email" class="auth-input" placeholder="Professional Email">
             <input type="password" id="reg-password" class="auth-input" placeholder="Secret Access Key">
             <button onclick="handleSignUp()" class="auth-btn">Confirm Registration</button>
@@ -175,9 +230,14 @@
         </div>
 
         <div id="forgot-container" class="auth-card hidden">
-            <div class="auth-logo" style="background: #f59e0b">?</div>
-            <h2>Recovery</h2>
-            <p style="font-size: 14px; color: var(--text-body); margin-bottom: 30px;">Request a secure reset link</p>
+            <div class="modern-logo-wrapper">
+                <div class="logo-icon-circle" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <div class="logo-text-brand">
+                    <span class="brand-log" style="color: #f59e0b;">RECO</span><span class="brand-book">VERY</span>
+                </div>
+            </div>
             <input type="email" id="forgot-email" class="auth-input" placeholder="Registered Email">
             <button onclick="handleForgotPassword()" class="auth-btn" style="background: #f59e0b">Send Recovery Link</button>
             <div class="auth-link">Found it? <span onclick="toggleAuth('login')" style="color:var(--accent); cursor:pointer;">Return to Login</span></div>
@@ -251,7 +311,6 @@
     </main>
 
     <script>
-        // Tema load paling awal
         function setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('daniel_logbook_theme', theme);
@@ -262,17 +321,11 @@
 
         setTheme(localStorage.getItem('daniel_logbook_theme') || 'cyber');
 
-        // Toggle Sidebar Mobile
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             sidebar.classList.toggle('active');
-            
-            if (sidebar.classList.contains('active')) {
-                overlay.style.display = 'block';
-            } else {
-                overlay.style.display = 'none';
-            }
+            overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
         }
 
         function toggleAccountMenu() {
@@ -289,11 +342,10 @@
             if(target) target.classList.remove('hidden');
         }
 
-        // Close dropdown/sidebar when clicking outside
         window.addEventListener('click', function(e) {
             const accMenu = document.getElementById('account-menu');
             const profileTrigger = document.querySelector('.profile-trigger');
-            if (!profileTrigger.contains(e.target) && !accMenu.contains(e.target)) {
+            if (profileTrigger && !profileTrigger.contains(e.target) && !accMenu.contains(e.target)) {
                 accMenu.classList.remove('show');
             }
         });
