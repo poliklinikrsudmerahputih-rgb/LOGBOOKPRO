@@ -1,12 +1,12 @@
 /**
- * UI-REKAP-BULANAN.JS - Versi Final Professional (Fixed Identity & Alignment)
- * Perbaikan: Identitas Rata Kanan-Kiri, Kegiatan Rata Kiri, Link Bukti Aktif
+ * UI-REKAP-BULANAN.JS - Versi Final Professional (Fixed Layout & Buttons)
+ * Update: Perbaikan lebar tombol cetak & Presisi Identitas Kiri-Kanan
  */
 
 window.uiRekap = window.uiRekap || {};
 
 Object.assign(window.uiRekap, {
-    // 1. RENDER HALAMAN UTAMA
+    // 1. RENDER HALAMAN UTAMA (Antarmuka Pengguna)
     renderRekapBulanan: async () => {
         const container = document.getElementById('page-content');
         const now = new Date();
@@ -18,11 +18,29 @@ Object.assign(window.uiRekap, {
             <style>
                 .rekap-controls { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; gap: 15px; flex-wrap: wrap; }
                 .filter-group { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; }
+                
+                /* Container Tombol Cetak agar tidak melebar */
+                .print-action-bar { 
+                    display: flex; 
+                    justify-content: flex-start; 
+                    align-items: center; 
+                    gap: 12px; 
+                    margin-bottom: 15px; 
+                    background: rgba(255,255,255,0.05); 
+                    padding: 12px; 
+                    border-radius: 10px; 
+                    flex-wrap: wrap;
+                }
+                
+                /* Paksa tombol cetak memiliki lebar otomatis (tidak full) */
+                .btn-fixed-width { width: auto !important; padding: 8px 18px !important; min-width: 100px; }
+
                 @media (max-width: 768px) {
                     .rekap-controls { flex-direction: column; align-items: stretch; }
                     .filter-group { justify-content: flex-start; }
                     .auth-input { width: 100% !important; }
                     .auth-btn { width: 100% !important; justify-content: center; }
+                    .btn-fixed-width { width: 48% !important; } /* Di mobile jadi setengah layar */
                 }
                 .matrix-table-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,0.2); position: relative; }
             </style>
@@ -46,17 +64,19 @@ Object.assign(window.uiRekap, {
                     </div>
                 </div>
 
-                <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;">
+                <div class="print-action-bar">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:11px; font-weight:700;">TGL CETAK:</span>
-                        <input type="date" id="tgl-cetak-surat" class="auth-input" style="width:140px; margin:0; font-size:11px;" value="${todayStr}">
+                        <span style="font-size:11px; font-weight:700; color:var(--accent);">TGL CETAK:</span>
+                        <input type="date" id="tgl-cetak-surat" class="auth-input" style="width:145px; margin:0; font-size:11px;" value="${todayStr}">
                     </div>
-                    <button onclick="uiRekap.downloadWordBulanan()" class="auth-btn" style="background:#2b5797; font-size:11px; padding:8px 15px;">
-                        <i class="fa-solid fa-file-word"></i> WORD
-                    </button>
-                    <button onclick="uiRekap.printLaporanBulanan()" class="auth-btn" style="background:#e11d48; font-size:11px; padding:8px 15px;">
-                        <i class="fa-solid fa-file-pdf"></i> PDF
-                    </button>
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="uiRekap.downloadWordBulanan()" class="auth-btn btn-fixed-width" style="background:#2b5797; font-size:11px;">
+                            <i class="fa-solid fa-file-word"></i> WORD
+                        </button>
+                        <button onclick="uiRekap.printLaporanBulanan()" class="auth-btn btn-fixed-width" style="background:#e11d48; font-size:11px;">
+                            <i class="fa-solid fa-file-pdf"></i> PDF
+                        </button>
+                    </div>
                 </div>
 
                 <div id="rekap-matrix-container" class="matrix-table-wrapper">
@@ -65,7 +85,7 @@ Object.assign(window.uiRekap, {
             </div>`;
     },
 
-    // 2. PROSES DATA
+    // 2. PROSES DATA (Ambil dari Supabase)
     prosesTampilkanBulanan: async () => {
         const bln = document.getElementById('bulan-filter').value;
         const thn = document.getElementById('tahun-filter').value;
@@ -160,64 +180,57 @@ Object.assign(window.uiRekap, {
         }
     },
 
-// 3. GENERATE FINAL HTML (IDENTITAS RATA KIRI-KANAN PRESISI)
+    // 3. GENERATE FINAL HTML (Identity Split Left-Right)
     generateFinalHTML: () => {
         const d = window.lastDataBulanan;
         if (!d) return "";
-        const config = window.uiRekap.kopConfig || { judul: "REKAPITULASI LOGBOOK", subJudul: "RSUD DANIEL" };
+        const config = window.uiRekap.kopConfig || { judul: "PEMERINTAH KABUPATEN MAGELANG\nRSUD MERAH PUTIH", subJudul: "Jl. Raya Magelang - Yogyakarta KM. 5 Mertoyudan, Magelang" };
         const p = d.profil;
 
         return `
             <html><head><style>
                 @page { size: Legal landscape; margin: 1cm; }
-                body { font-family: 'Arial', sans-serif; font-size: 8pt; color:#000; margin:0; }
+                body { font-family: 'Arial', sans-serif; font-size: 8.5pt; color:#000; margin:0; }
                 .kop-header { text-align: center; border-bottom: 2.5pt double #000; padding-bottom: 8px; margin-bottom: 15px; }
                 
-                /* Container Identitas menggunakan tabel 3 kolom utama */
                 .identity-wrapper { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-                .identity-wrapper td { vertical-align: top; padding: 0; }
-                
-                /* Tabel kecil di dalam kolom untuk label dan isi */
+                .identity-wrapper td { vertical-align: top; }
                 .sub-identity { border-collapse: collapse; width: 100%; }
-                .sub-identity td { padding: 2px 0; font-weight: bold; font-size: 9pt; }
+                .sub-identity td { padding: 1px 0; font-weight: bold; font-size: 9pt; }
                 
-                /* Gaya Tabel Utama */
-                table.main-table { width: 100%; border-collapse: collapse; table-layout: auto; }
-                table.main-table th { border: 0.5pt solid #000; padding: 4px; text-align: center; background-color: #f2f2f2; font-size: 8pt; }
-                table.main-table td { border: 0.5pt solid #000; padding: 4px; font-size: 8pt; }
+                table.main-table { width: 100%; border-collapse: collapse; }
+                table.main-table th { border: 0.5pt solid #000; padding: 5px; text-align: center; background-color: #eee; }
+                table.main-table td { border: 0.5pt solid #000; padding: 4px; }
                 
                 .text-left { text-align: left !important; }
                 .text-center { text-align: center !important; }
-                .text-right { text-align: right !important; }
                 
                 .ttd-container { width: 100%; margin-top: 30px; border-collapse: collapse; }
-                .ttd-container td { width: 50%; text-align: center; font-size: 9pt; }
+                .ttd-container td { width: 50%; text-align: center; font-size: 9.5pt; }
             </style></head><body>
                 <div class="kop-header">
-                    <div style="font-size: 13pt; font-weight: bold;">${config.judul.replace(/\n/g, '<br>')}</div>
-                    <div style="font-size: 8pt; font-weight: normal;">${config.subJudul.replace(/\n/g, '<br>')}</div>
+                    <div style="font-size: 12pt; font-weight: bold;">${config.judul.replace(/\n/g, '<br>')}</div>
+                    <div style="font-size: 8pt;">${config.subJudul}</div>
                 </div>
 
-                <div style="text-align:center; font-weight:bold; text-decoration:underline; font-size:11pt;">REKAPITULASI LOGBOOK BULANAN</div>
-                <div style="text-align:center; font-weight:bold; margin-bottom:20px;">PERIODE: ${d.bulanNama.toUpperCase()} ${d.tahun}</div>
+                <div style="text-align:center; font-weight:bold; text-decoration:underline; font-size:11pt; margin-bottom:2px;">REKAPITULASI LOGBOOK BULANAN</div>
+                <div style="text-align:center; font-weight:bold; margin-bottom:15px;">PERIODE: ${d.bulanNama.toUpperCase()} ${d.tahun}</div>
 
                 <table class="identity-wrapper">
                     <tr>
-                        <td width="45%">
+                        <td width="48%">
                             <table class="sub-identity">
                                 <tr><td width="30%">Nama Pegawai</td><td width="2%">:</td><td>${p.p_nama}</td></tr>
                                 <tr><td>NIP</td><td>:</td><td>${p.p_nip}</td></tr>
                                 <tr><td>Pangkat/Gol</td><td>:</td><td>${p.p_golongan || '-'}</td></tr>
                             </table>
                         </td>
-                        
-                        <td width="10%"></td>
-                        
-                        <td width="45%">
+                        <td width="4%"></td>
+                        <td width="48%">
                             <table class="sub-identity">
-                                <tr><td width="30%">Unit Kerja</td><td width="2%">:</td><td>${p.p_unit}</td></tr>
-                                <tr><td>Instansi</td><td>:</td><td>${p.p_instansi}</td></tr>
-                                <tr><td>Jabatan</td><td>:</td><td>${p.p_jabatan}</td></tr>
+                                <tr><td width="30%">Unit Kerja</td><td width="2%">:</td><td class="text-left">${p.p_unit}</td></tr>
+                                <tr><td>Instansi</td><td>:</td><td class="text-left">${p.p_instansi}</td></tr>
+                                <tr><td>Jabatan</td><td>:</td><td class="text-left">${p.p_jabatan}</td></tr>
                             </table>
                         </td>
                     </tr>
@@ -228,8 +241,7 @@ Object.assign(window.uiRekap, {
                     .replace('<table', '<table class="main-table" border="1"')
                     .replace(/<td>(.*?)<\/td>/g, (match, content) => {
                         const clean = content.replace(/<[^>]*>?/gm, '').trim();
-                        // Jika konten adalah butir kegiatan (panjang), rata kiri. 
-                        // Jika angka (tanggal/volume/no), rata tengah.
+                        // Kegiatan (teks panjang) rata kiri, angka rata tengah
                         if (clean.length > 5 && isNaN(clean) && clean !== '-') {
                             return `<td class="text-left">${content}</td>`;
                         }
@@ -246,6 +258,7 @@ Object.assign(window.uiRekap, {
             </body></html>`;
     },
 
+    // 4. FUNGSI EKSPOR
     printLaporanBulanan: () => {
         if (!window.lastDataBulanan) return alert("Tampilkan data dahulu!");
         const win = window.open('', '_blank');
@@ -260,7 +273,7 @@ Object.assign(window.uiRekap, {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Rekap_Bulanan_${window.lastDataBulanan.bulanNama}.doc`;
+        a.download = `Rekap_Logbook_${window.lastDataBulanan.profil.p_nama}_${window.lastDataBulanan.bulanNama}.doc`;
         a.click();
     }
 });
