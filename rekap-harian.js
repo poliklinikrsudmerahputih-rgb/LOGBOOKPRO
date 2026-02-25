@@ -1,6 +1,6 @@
 /**
- * REKAP-HARIAN.JS - RESPONSIVE OPTIMIZED V4.2
- * Fixed: Persistent Dynamic Links & Right-Aligned Identity
+ * REKAP-HARIAN.JS - INTEGRATED MASTER V4.2
+ * Sinkronisasi: link_bukti_dukung & hasil_kerja dari Master
  */
 
 window.uiRekap = window.uiRekap || {};
@@ -46,7 +46,7 @@ Object.assign(window.uiRekap, {
                 <div class="header-flex">
                     <div>
                         <h3 style="font-weight:800; margin:0; color:var(--accent);">📅 Rekapitulasi Harian</h3>
-                        <p style="margin:5px 0 0 0; opacity:0.6; font-size:12px;">Rincian butir kegiatan dan capaian kinerja.</p>
+                        <p style="margin:5px 0 0 0; opacity:0.6; font-size:12px;">Data otomatis terhubung dengan E-Evidence Master Butir.</p>
                     </div>
                     
                     <div class="filter-card">
@@ -173,10 +173,12 @@ Object.assign(window.uiRekap, {
                 const realisasi = realisasiMap[item.kegiatan_id] || 0;
                 const sisa = target - realisasi;
                 
-                // DINAMIS: Menggunakan output_hasil (Laporan/Dokumen/Pasien)
-                const labelOutput = kamus.output_hasil || 'BUKTI';
-                const linkBukti = item.link_bukti ?
-                    `<a href="${item.link_bukti}" target="_blank" class="link-output-dynamic"><i class="fa-solid fa-file-circle-check"></i> ${labelOutput}</a>` : '';
+                // MENGAMBIL DATA DARI MASTER BUKTI
+                const labelOutput = kamus.hasil_kerja || 'KEGIATAN';
+                const linkEEvidence = kamus.link_bukti_dukung;
+                
+                const linkBuktiHtml = linkEEvidence ?
+                    `<a href="${linkEEvidence}" target="_blank" class="link-output-dynamic"><i class="fa-solid fa-file-circle-check"></i> BUKA ${labelOutput.toUpperCase()}</a>` : '';
 
                 htmlTabel += `
                     <tr style="border-bottom:1px solid var(--border);">
@@ -188,8 +190,8 @@ Object.assign(window.uiRekap, {
                         <td style="padding:12px; border:1px solid var(--border);">
                             <div style="font-weight:700; color:var(--accent); margin-bottom:5px;">${kamus.nama_kegiatan || '-'}</div>
                             <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                                <span style="font-size:10px; opacity:0.8;">🎯 TGT: ${target} | 📈 REAL: ${realisasi} | 📉 SISA: <b style="color:${sisa <= 0 ? '#4ade80' : '#fb7185'}">${sisa}</b></span>
-                                ${linkBukti}
+                                <span style="font-size:10px; opacity:0.8;">🎯 TGT: ${target} | 📈 REAL: ${realisasi} | 📉 SISA: <b style="color:${sisa <= 0 ? '#4ade80' : '#fb7185'}">${sisa < 0 ? 0 : sisa}</b></span>
+                                ${linkBuktiHtml}
                             </div>
                         </td>
                         <td style="padding:12px; border:1px solid var(--border); text-align:center;">
@@ -219,15 +221,13 @@ Object.assign(window.uiRekap, {
         const { profil: p, mulai, selesai, tableBody } = window.lastDataHarian;
         const config = uiRekap.kopConfig;
 
-        // FIXED: Jangan hapus <a> tag! Ubah saja style-nya agar terlihat profesional di Word/PDF
         const printableTable = tableBody
             .replace(/color:#fff/g, 'color:#000')
             .replace(/border:1px solid var\(--border\)/g, 'border:1pt solid #000')
             .replace(/background:rgba\(255,255,255,0.05\)/g, 'background:#f2f2f2')
             .replace(/color:var\(--accent\)/g, 'color:#000')
-            // Ubah link biru agar bisa dipencet di Word
+            // Ubah class link agar tetap cantik di cetakan
             .replace(/class="link-output-dynamic"/g, 'style="color:#0000FF; text-decoration:underline; font-weight:bold; font-size:8pt;"')
-            // Buang icon i class karena sering error di Word
             .replace(/<i.*?<\/i>/g, ''); 
 
         return `
@@ -266,16 +266,16 @@ Object.assign(window.uiRekap, {
                 <div class="id-section">
                     <div class="id-column-left">
                         <table class="id-table">
-                            <tr><td style="width:100px">Nama Pegawai</td><td>: <b>${p.p_nama || '-'}</b></td></tr>
-                            <tr><td>NIP</td><td>: ${p.p_nip || '-'}</td></tr>
-                            <tr><td>Pangkat/Gol</td><td>: ${p.p_golongan || '-'}</td></tr>
+                            <tr><td style="width:100px">Nama Pegawai</td><td>: <b>${p?.p_nama || '-'}</b></td></tr>
+                            <tr><td>NIP</td><td>: ${p?.p_nip || '-'}</td></tr>
+                            <tr><td>Pangkat/Gol</td><td>: ${p?.p_golongan || '-'}</td></tr>
                         </table>
                     </div>
                     <div class="id-column-right">
                         <table class="id-table">
-                            <tr><td style="width:80px">Unit Kerja</td><td>: ${p.p_unit || '-'}</td></tr>
-                            <tr><td>Instansi</td><td>: ${p.p_instansi || 'RSUD MERAH PUTIH'}</td></tr>
-                            <tr><td>Jabatan</td><td>: ${p.p_jabatan || '-'}</td></tr>
+                            <tr><td style="width:80px">Unit Kerja</td><td>: ${p?.p_unit || '-'}</td></tr>
+                            <tr><td>Instansi</td><td>: ${p?.p_instansi || 'RSUD MERAH PUTIH'}</td></tr>
+                            <tr><td>Jabatan</td><td>: ${p?.p_jabatan || '-'}</td></tr>
                         </table>
                     </div>
                 </div>
@@ -286,8 +286,8 @@ Object.assign(window.uiRekap, {
 
                 <table class="ttd-table">
                     <tr>
-                        <td>Mengetahui,<br>${p.a_jabatan || 'Atasan Penilai'}<br><br><br><br><u><b>${p.a_nama || '-'}</b></u><br>NIP. ${p.a_nip || '-'}</td>
-                        <td>Magelang, ${new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'})}<br>Pegawai Melaporkan,<br><br><br><br><u><b>${p.p_nama || '-'}</b></u><br>NIP. ${p.p_nip || '-'}</td>
+                        <td>Mengetahui,<br>${p?.a_jabatan || 'Atasan Penilai'}<br><br><br><br><u><b>${p?.a_nama || '-'}</b></u><br>NIP. ${p?.a_nip || '-'}</td>
+                        <td>Magelang, ${new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'})}<br>Pegawai Melaporkan,<br><br><br><br><u><b>${p?.p_nama || '-'}</b></u><br>NIP. ${p?.p_nip || '-'}</td>
                     </tr>
                 </table>
             </body></html>`;
